@@ -63,7 +63,7 @@ public static class ComponentServiceExtension
     public static void AddResponseMiddleware(this IServiceCollection sc) => sc.AddTransient<ResponseMiddleware>();
 
     public static void AddComponentMediatR(this IServiceCollection sc) =>
-        sc.AddMediatR(typeof(AssemblyReference).Assembly);
+        sc.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
 
     public static void AddComponentValidationBehavior(this IServiceCollection sc) =>
         sc.AddTransient(typeof(IPipelineBehavior<,>), typeof(BaseValidationBehavior<,>));

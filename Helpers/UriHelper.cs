@@ -18,6 +18,7 @@ public static class UriHelper
         var pageUri = new Uri(string.Concat(baseUrl, hr?.Path.Value)).AbsoluteUri;
         pageUri = QueryHelpers.AddQueryString(pageUri, "page", filter.Page.ToString());
         pageUri = QueryHelpers.AddQueryString(pageUri, "per-page", filter.PerPage.ToString());
+        pageUri = QueryHelpers.AddQueryString(pageUri, "first-request-time", filter.FirstRequestTime.ToString());
         if (!string.IsNullOrEmpty(filter.Sort)) pageUri = QueryHelpers.AddQueryString(pageUri, "sort", filter.Sort);
         return new Uri(pageUri);
     }

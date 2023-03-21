@@ -34,7 +34,7 @@ public readonly struct StopwatchHelper
         $"{Math.Round(GetElapsedTime(_startTimestamp, GetTimestamp()).TotalMilliseconds, 2)}".Replace(",", ".") + "ms";
     
     public double GetSecondElapsedTime() =>
-        Math.Round(GetElapsedTime(_startTimestamp, GetTimestamp()).TotalSeconds, 2);
+        Math.Round(GetElapsedTime(_startTimestamp, GetTimestamp()).TotalSeconds, 3);
 
     public void Stop() => _stopwatch.Stop();
 }

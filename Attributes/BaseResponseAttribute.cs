@@ -16,7 +16,6 @@ public class BaseResponseAttribute : Attribute, IAsyncActionFilter
     {
         var sw = StopwatchHelper.StartNew();
         var resultContext = await next();
-        var requestTime = sw.GetSecondElapsedTime();
 
         if (resultContext.Exception is null)
         {
@@ -45,7 +44,7 @@ public class BaseResponseAttribute : Attribute, IAsyncActionFilter
                 }
             }
 
-            response.RequestTime = requestTime;
+            response.RequestTime = sw.GetSecondElapsedTime();
             resultContext.HttpContext.Response.StatusCode = response.Status;
             resultContext.Result = new ObjectResult(response);
         }

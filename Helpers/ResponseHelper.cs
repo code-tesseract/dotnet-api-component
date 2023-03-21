@@ -73,6 +73,7 @@ public static class ResponseHelper
     {
         var startIndex = firstTrace.IndexOf(":line ", StringComparison.CurrentCulture) + ":line ".Length;
         var endIndex = firstTrace.LastIndexOf(" at ", StringComparison.CurrentCulture);
+        if (endIndex - startIndex <= 0) return null;
         var lineString = firstTrace.Substring(startIndex, endIndex - startIndex);
         var firstLineString = lineString.Split(' ').Take(1).First();
         var isLineNumber = int.TryParse(firstLineString, out var lineResult);
@@ -104,14 +105,22 @@ public static class ResponseHelper
     private static Links CreateLinks(DefaultPaginationFilter filter, int totalPages)
     {
         var selfLink = UriHelper.GetPageUri(filter);
-        var firstLink = UriHelper.GetPageUri(new DefaultPaginationFilter(1, filter.PerPage) { Sort = filter.Sort });
-        var lastLink = UriHelper.GetPageUri(new DefaultPaginationFilter(totalPages, filter.PerPage)
+        
+        var firstLink = UriHelper.GetPageUri(new DefaultPaginationFilter(1, filter.PerPage, filter.FirstRequestTime)
             { Sort = filter.Sort });
+        
+        var lastLink = UriHelper.GetPageUri(
+            new DefaultPaginationFilter(totalPages, filter.PerPage, filter.FirstRequestTime)
+                { Sort = filter.Sort });
+        
         var nextLink = filter.Page >= 1 && filter.Page < totalPages
-            ? UriHelper.GetPageUri(new DefaultPaginationFilter(filter.Page + 1, filter.PerPage) { Sort = filter.Sort })
+            ? UriHelper.GetPageUri(new DefaultPaginationFilter(filter.Page + 1, filter.PerPage, filter.FirstRequestTime)
+                { Sort = filter.Sort })
             : null;
+        
         var prevLink = filter.Page - 1 >= 1 && filter.Page <= totalPages
-            ? UriHelper.GetPageUri(new DefaultPaginationFilter(filter.Page - 1, filter.PerPage) { Sort = filter.Sort })
+            ? UriHelper.GetPageUri(new DefaultPaginationFilter(filter.Page - 1, filter.PerPage, filter.FirstRequestTime)
+                { Sort = filter.Sort })
             : null;
 
         return new Links(selfLink, firstLink, prevLink, nextLink, lastLink);
