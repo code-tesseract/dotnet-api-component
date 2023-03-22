@@ -24,7 +24,6 @@ public static class ComponentServiceExtension
         sc.AddComponentAccessor();
         sc.AddComponentSettings(conf);
         sc.AddComponentBaseDbContext();
-        sc.AddResponseMiddleware();
         sc.AddComponentMediatR();
         sc.AddComponentValidationBehavior();
         sc.AddComponentValidatorsFromAssembly();
@@ -59,8 +58,6 @@ public static class ComponentServiceExtension
     }
 
     public static void AddComponentBaseDbContext(this IServiceCollection sc) => sc.AddDbContext<BaseDbContext>();
-
-    public static void AddResponseMiddleware(this IServiceCollection sc) => sc.AddTransient<ResponseMiddleware>();
 
     public static void AddComponentMediatR(this IServiceCollection sc) =>
         sc.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());

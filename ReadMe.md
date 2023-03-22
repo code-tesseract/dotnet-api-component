@@ -39,8 +39,7 @@
 │   ├── 📃 StringEnumHelper.cs
 │   └── 📃 UriHelper.cs
 ├── 📂 Middlewares
-│   ├── 📃 ExceptionMiddleware.cs
-│   └── 📃 ResponseMiddleware.cs
+│   └── 📃 ExceptionMiddleware.cs
 ├── 📂 Models
 │   ├── 📂 Pagination
 │   |   ├── 📃 Links.cs

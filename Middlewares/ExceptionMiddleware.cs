@@ -46,7 +46,33 @@ public class ExceptionMiddleware
             else
             {
                 await _next.Invoke(context);
-                
+                if (!context.Response.HasStarted)
+                {
+                    Response? response;
+                    switch (context.Response.StatusCode)
+                    {
+                        case StatusCodes.Status404NotFound:
+                            response = new Response(
+                                message: ResponseMessageEnum.NotFound.GetDescription(),
+                                code: (int)ResponseCodeEnum.Failed,
+                                status: StatusCodes.Status404NotFound,
+                                requestTime: sw.GetSecondElapsedTime(),
+                                data: null
+                            );
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                            return;
+                        case StatusCodes.Status405MethodNotAllowed:
+                            response = new Response(
+                                message: ResponseMessageEnum.MethodNotAllowed.GetDescription(),
+                                code: (int)ResponseCodeEnum.Failed,
+                                status: StatusCodes.Status405MethodNotAllowed,
+                                requestTime: sw.GetSecondElapsedTime(),
+                                data: null
+                            );
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                            return;
+                    }
+                }
             }
         }
         catch (Exception exception)
