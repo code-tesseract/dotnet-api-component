@@ -27,7 +27,7 @@ public class BaseResponseAttribute : Attribute, IAsyncActionFilter
             if (responseBodyObject != null)
             {
                 var responseBodyString = !responseBodyObject.ToString().IsValidJson()
-                    ? JsonConvert.SerializeObject(responseBodyObject)
+                    ? JsonConvert.SerializeObject(responseBodyObject, ResponseHelper.DefaultJsonSetting())
                     : responseBodyObject.ToString();
 
                 if (responseBodyString != null)

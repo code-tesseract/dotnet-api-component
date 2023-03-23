@@ -4,7 +4,6 @@ using Component.Exceptions;
 using Component.Helpers;
 using Component.Models;
 using Component.Settings;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -28,7 +27,7 @@ public class ExceptionMiddleware
         var sw = StopwatchHelper.StartNew();
         try
         {
-            if (context.Request.ContentType != "application/json" && context.Request.Method == HttpMethods.Post)
+            if (context.Request.ContentType == null && context.Request.Method == HttpMethods.Post)
             {
                 context.Response.StatusCode = StatusCodes.Status415UnsupportedMediaType;
                 context.Response.ContentType = "application/json";
@@ -42,36 +41,36 @@ public class ExceptionMiddleware
                 );
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                return;
             }
-            else
+            
+            await _next.Invoke(context);
+            
+            if (!context.Response.HasStarted)
             {
-                await _next.Invoke(context);
-                if (!context.Response.HasStarted)
+                Response? response;
+                switch (context.Response.StatusCode)
                 {
-                    Response? response;
-                    switch (context.Response.StatusCode)
-                    {
-                        case StatusCodes.Status404NotFound:
-                            response = new Response(
-                                message: ResponseMessageEnum.NotFound.GetDescription(),
-                                code: (int)ResponseCodeEnum.Failed,
-                                status: StatusCodes.Status404NotFound,
-                                requestTime: sw.GetSecondElapsedTime(),
-                                data: null
-                            );
-                            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-                            return;
-                        case StatusCodes.Status405MethodNotAllowed:
-                            response = new Response(
-                                message: ResponseMessageEnum.MethodNotAllowed.GetDescription(),
-                                code: (int)ResponseCodeEnum.Failed,
-                                status: StatusCodes.Status405MethodNotAllowed,
-                                requestTime: sw.GetSecondElapsedTime(),
-                                data: null
-                            );
-                            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-                            return;
-                    }
+                    case StatusCodes.Status404NotFound:
+                        response = new Response(
+                            message: ResponseMessageEnum.NotFound.GetDescription(),
+                            code: (int)ResponseCodeEnum.Failed,
+                            status: StatusCodes.Status404NotFound,
+                            requestTime: sw.GetSecondElapsedTime(),
+                            data: null
+                        );
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                        return;
+                    case StatusCodes.Status405MethodNotAllowed:
+                        response = new Response(
+                            message: ResponseMessageEnum.MethodNotAllowed.GetDescription(),
+                            code: (int)ResponseCodeEnum.Failed,
+                            status: StatusCodes.Status405MethodNotAllowed,
+                            requestTime: sw.GetSecondElapsedTime(),
+                            data: null
+                        );
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                        return;
                 }
             }
         }

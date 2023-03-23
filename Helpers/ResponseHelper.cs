@@ -3,6 +3,7 @@ using Component.Filters;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 // ReSharper disable MustUseReturnValue
 
@@ -30,6 +31,12 @@ public static class ResponseHelper
             return false;
         }
     }
+    
+    public static JsonSerializerSettings DefaultJsonSetting() => new()
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        ContractResolver = new DefaultContractResolver { NamingStrategy = new DefaultNamingStrategy() }
+    };
 
     public static async Task<string> FormatRequest(HttpRequest request)
     {

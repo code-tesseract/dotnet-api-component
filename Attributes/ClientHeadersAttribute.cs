@@ -44,7 +44,12 @@ public class ClientHeadersAttribute : Attribute, IAsyncActionFilter
             if (client.Status != Client.StatusActive)
                 throw new HttpException(400, $"Your app status is {client.Status}. Please contact help desk.");
 
-            /* check client whitelist when not null */
+            if (client.ExpiryOn != null && client.ExpiryOn > DateTime.UtcNow.ToLocalTime())
+                throw new HttpException(400,
+                    $"Your client is expired on `{client.ExpiryOn.Value:dd MMMM yyyy} at {client.ExpiryOn.Value:HH:mm}`. " +
+                    $"Please contact the help desk."
+                );
+
             if (client.ClientWhitelists?.Count > 0)
             {
                 var ip = IdentityHelper.GetClientIp(context.HttpContext);

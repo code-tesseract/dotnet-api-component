@@ -24,6 +24,6 @@ public enum ResponseMessageEnum
     Unhandled,
     [Description("An internal server error occurred.")]
     InternalError,
-    [Description("Please provide your `Content-type` header with `application/json`.")]
+    [Description("Please provide your `Content-type` header.")]
     UnsupportedMediaType
 }
