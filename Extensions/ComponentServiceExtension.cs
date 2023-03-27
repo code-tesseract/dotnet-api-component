@@ -29,7 +29,7 @@ public static class ComponentServiceExtension
         sc.AddComponentValidationBehavior();
         sc.AddComponentValidatorsFromAssembly();
         sc.AddConfigureApiBehaviorOptions();
-        sc.AddMediaServiceClient(conf);
+        sc.AddMediaServiceClient();
     }
 
     public static void AddComponentBaseController(this IServiceCollection sc)
@@ -73,7 +73,7 @@ public static class ComponentServiceExtension
     public static void AddConfigureApiBehaviorOptions(this IServiceCollection sc) =>
         sc.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-    public static void AddMediaServiceClient(this IServiceCollection sc, IConfiguration conf)
+    public static void AddMediaServiceClient(this IServiceCollection sc)
     {
         sc.AddTransient<MediaServiceHandler>();
         sc.AddTransient<IMediaService, MediaService>();

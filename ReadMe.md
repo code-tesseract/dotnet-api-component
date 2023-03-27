@@ -1,66 +1,29 @@
-<h1 class="title">🔥 ASP.NET Core 6 API Component </h1>
+# ASP.NET Core 6 API Component
+<hr/>
 
-<pre class="component-tree">
-<code>
-💻 Component
-├── 📂 Actions
-│   └── 📃 ListAction.cs
-├── 📂 Attributes
-│   ├── 📃 AllowAnonymousAttribute.cs
-│   ├── 📃 BaseResponseAttribute.cs
-│   └── 📃 ClientHeadersAttribute.cs
-├── 📂 Base
-│   ├── 📃 BaseController.cs
-│   ├── 📃 BaseDbBehaviors.cs
-│   ├── 📃 BaseDbContext.cs
-│   ├── 📃 BaseEntity.cs
-│   └── 📃 BaseValidationBehavior.cs
-├── 📂 Entities
-│   ├── 📃 Client.cs
-│   └── 📃 ClientWhitelist.cs
-├── 📂 Enums
-│   ├── 📃 ResponseCodeEnum.cs
-│   └── 📃 ResponseMessageEnum.cs
-├── 📂 Exceptions
-│   ├── 📃 HttpException.cs
-│   └── 📃 ValidationException.cs
-├── 📂 Extensions
-│   ├── 📃 ComponentAppExtension.cs
-│   └── 📃 ComponentServiceExtension.cs
-├── 📂 Filters
-│   └── 📃 DefaultPaginationFilter.cs    
-├── 📂 Helpers
-│   ├── 📃 DatetimeHelper.cs
-│   ├── 📃 DirectoryHelper.cs
-│   ├── 📃 IdentityHelper.cs
-│   ├── 📃 ResponseHelper.cs
-│   ├── 📃 SecurityHelper.cs
-│   ├── 📃 StopwatchHelper.cs
-│   ├── 📃 StringEnumHelper.cs
-│   └── 📃 UriHelper.cs
-├── 📂 Middlewares
-│   └── 📃 ExceptionMiddleware.cs
-├── 📂 Models
-│   ├── 📂 Pagination
-│   |   ├── 📃 Links.cs
-│   |   ├── 📃 Meta.cs
-│   |   ├── 📃 Page.cs
-│   |   └── 📃 Record.cs
-│   ├── 📃 Response.cs
-│   └── 📃 StackTraceResponse.cs
-├── 📂 Settings
-│   ├── 📃 AppClientSetting.cs
-│   ├── 📃 AppSetting.cs
-│   ├── 📃 BaseDatabaseSetting.cs
-│   └── 📃 MediaSetting.cs
-└── 📃 .gitignore
-└── 📃 AssemblyReference.cs
-└── 📃 ReadMe.cs
-</code>
-</pre>
+#### Tech Stack
+- Programming Language: C#
+- Framework: ASP.NET Core 6
+- Web Server: Kestrel
+- Database: Entity Framework Core (EF Core)
+- Serialization: JSON using Newtonsoft.Json
 
-<pre class="component-features">
-<code>
+#### Additional Packages
+- Entity Framework Core
+- FluentValidation
+- MediatR
+- AspNetCore Http
+- AspNetCore Mvc Core
+- NewtonsoftJson
+- LinqDynamicCore
 
-</code>
-</pre>
+#### Features
+- Custom Response Wrapper
+- Error Exception Handler
+- Custom Validation
+- Media Service 
+- Custom Pagination List
+- Client Whitelist
+
+
+
