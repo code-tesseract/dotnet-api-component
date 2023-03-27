@@ -1,5 +1,4 @@
 # ASP.NET Core 6 API Component
-<hr/>
 
 #### Tech Stack
 - Programming Language: C#
