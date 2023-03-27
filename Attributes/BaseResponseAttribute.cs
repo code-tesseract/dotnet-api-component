@@ -19,7 +19,7 @@ public class BaseResponseAttribute : Attribute, IAsyncActionFilter
 
         if (resultContext.Exception is null)
         {
-            var response = new Response(null);
+            var response = new Response();
 
             var responseObjectResult = resultContext.Result as ObjectResult;
             var responseBodyObject = responseObjectResult?.Value;

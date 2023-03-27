@@ -15,7 +15,9 @@ public class ClientHeadersAttribute : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
+        var allowAnonymous = context.ActionDescriptor.EndpointMetadata
+            .OfType<AllowAnonymousClientHeadersAttribute>().Any();
+        
         if (!allowAnonymous)
         {
             var db = context.HttpContext.RequestServices.GetService<BaseDbContext>();

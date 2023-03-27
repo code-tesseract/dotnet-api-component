@@ -22,7 +22,7 @@ public class Response
     public object? Meta { get; set; }
     
     public Response(
-        object? data,
+        object? data = null,
         string? message = null,
         string? name = null,
         int status = StatusCodes.Status200OK,

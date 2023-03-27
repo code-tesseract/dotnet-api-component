@@ -1,6 +1,6 @@
 ﻿using Component.Base;
+using Component.Externals.MediaService;
 using Component.Helpers;
-using Component.Middlewares;
 using Component.Settings;
 using FluentValidation;
 using MediatR;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -28,6 +29,7 @@ public static class ComponentServiceExtension
         sc.AddComponentValidationBehavior();
         sc.AddComponentValidatorsFromAssembly();
         sc.AddConfigureApiBehaviorOptions();
+        sc.AddMediaServiceClient(conf);
     }
 
     public static void AddComponentBaseController(this IServiceCollection sc)
@@ -70,4 +72,16 @@ public static class ComponentServiceExtension
 
     public static void AddConfigureApiBehaviorOptions(this IServiceCollection sc) =>
         sc.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
+    public static void AddMediaServiceClient(this IServiceCollection sc, IConfiguration conf)
+    {
+        sc.AddTransient<MediaServiceHandler>();
+        sc.AddTransient<IMediaService, MediaService>();
+
+        var sp = sc.BuildServiceProvider();
+        var mediaSetting = sp.GetRequiredService<IOptions<MediaSetting>>().Value;
+
+        sc.AddHttpClient("MediaServiceClient", m => { m.BaseAddress = new Uri(mediaSetting.MediaUrl); })
+            .AddHttpMessageHandler<MediaServiceHandler>();
+    }
 }
