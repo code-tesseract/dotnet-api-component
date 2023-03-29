@@ -56,7 +56,7 @@ public static class ComponentServiceExtension
     {
         sc.Configure<AppSetting>(conf.GetSection("AppSetting"));
         sc.Configure<BaseDatabaseSetting>(conf.GetSection("BaseDatabaseSetting"));
-        sc.Configure<MediaSetting>(conf.GetSection("MediaSetting"));
+        sc.Configure<MediaServiceSetting>(conf.GetSection("MediaServiceSetting"));
     }
 
     public static void AddComponentBaseDbContext(this IServiceCollection sc) => sc.AddDbContext<BaseDbContext>();
@@ -74,14 +74,13 @@ public static class ComponentServiceExtension
         sc.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
     public static void AddMediaServiceClient(this IServiceCollection sc)
-    {
+    { 
+        var sp = sc.BuildServiceProvider();
+        var mediaSetting = sp.GetRequiredService<IOptions<MediaServiceSetting>>().Value;
+
         sc.AddTransient<MediaServiceHandler>();
         sc.AddTransient<IMediaService, MediaService>();
-
-        var sp = sc.BuildServiceProvider();
-        var mediaSetting = sp.GetRequiredService<IOptions<MediaSetting>>().Value;
-
-        sc.AddHttpClient("MediaServiceClient", m => { m.BaseAddress = new Uri(mediaSetting.MediaUrl); })
+        sc.AddHttpClient("MediaServiceClient", m => m.BaseAddress = new Uri(mediaSetting.Url))
             .AddHttpMessageHandler<MediaServiceHandler>();
     }
 }

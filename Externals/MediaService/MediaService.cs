@@ -1,7 +1,9 @@
+using System.Text;
 using Component.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ContentDispositionHeaderValue = System.Net.Http.Headers.ContentDispositionHeaderValue;
 
 namespace Component.Externals.MediaService;
 
@@ -14,19 +16,50 @@ public class MediaService : IMediaService
     {
         var (method, path) = MediaServiceEndpoints.Requirements;
         var requestMessage = new HttpRequestMessage(method, path);
-        var responseMessage = await _client.SendAsync(requestMessage, ct);
+        using var responseMessage = await _client.SendAsync(requestMessage, ct);
         var responseBodyString = await responseMessage.Content.ReadAsStringAsync(ct);
         return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
     }
 
-    public Task<Response> UploadAsync(IFormFile file, CancellationToken ct)
+    public async Task<Response> UploadAsync(IFormFile? file, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        using var formData = new MultipartFormDataContent();
+        if (file != null)
+            formData.Add(new StreamContent(file.OpenReadStream()), "File", file.FileName);
+        else
+        {
+            var nullContent = new ByteArrayContent(Array.Empty<byte>());
+            nullContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "File",
+                FileName = "null",
+                Size = 0
+            };
+            formData.Add(nullContent);
+        }
+
+        var (method, path) = MediaServiceEndpoints.Upload;
+        var requestMessage = new HttpRequestMessage(method, path);
+        requestMessage.Content = formData;
+
+        using var responseMessage = await _client.SendAsync(requestMessage, ct);
+        var responseBodyString = await responseMessage.Content.ReadAsStringAsync(ct);
+        return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
     }
 
-    public Task<Response> UploadBase64Async(string base64Content, CancellationToken ct)
+    public async Task<Response> UploadBase64Async(string? base64Content, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var (method, path) = MediaServiceEndpoints.UploadBase64;
+        var requestMessage = new HttpRequestMessage(method, path);
+        requestMessage.Content = new StringContent(
+            JsonConvert.SerializeObject(new { Base64Content = base64Content?? string.Empty }),
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        using var responseMessage = await _client.SendAsync(requestMessage, ct);
+        var responseBodyString = await responseMessage.Content.ReadAsStringAsync(ct);
+        return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
     }
 
     public Task<FileStreamResult> PreviewAsync(Guid mediaId, CancellationToken ct)

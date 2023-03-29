@@ -1,10 +1,12 @@
-﻿using Component.Helpers;
+﻿using Component.Externals.MediaService;
+using Component.Helpers;
 using Component.Middlewares;
 using Component.Models;
 using Component.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -21,8 +23,8 @@ public static class ComponentAppExtension
         ab.AddComponentForwardedHeaders();
         ab.AddComponentMiddlewares();
         ab.UseRouting();
-        ab.UseEndpoints(endpoints => endpoints.MapControllers());
-    }
+        ab.UseEndpoints(e => e.MapControllers());
+    }   
 
     public static void AddComponentCors(this IApplicationBuilder ab) =>
         ab.UseCors(cpb => cpb
