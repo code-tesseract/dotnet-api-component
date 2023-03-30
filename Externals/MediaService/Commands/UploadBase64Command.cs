@@ -1,5 +1,4 @@
 using Component.Models;
-using FluentValidation;
 using MediatR;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global

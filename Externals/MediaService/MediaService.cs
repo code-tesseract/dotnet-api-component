@@ -47,6 +47,33 @@ public class MediaService : IMediaService
         return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
     }
 
+    public async Task<Response> UploadsAsync(IEnumerable<IFormFile>? files, CancellationToken ct)
+    {
+        using var formData = new MultipartFormDataContent();
+
+        if (files != null)
+            files.ToList().ForEach(f => formData.Add(new StreamContent(f.OpenReadStream()), "Files", f.FileName));
+        else
+        {
+            var nullContent = new ByteArrayContent(Array.Empty<byte>());
+            nullContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "Files",
+                FileName = "null",
+                Size = 0
+            };
+            formData.Add(nullContent);
+        }
+        
+        var (method, path) = MediaServiceEndpoints.Uploads;
+        var requestMessage = new HttpRequestMessage(method, path);
+        requestMessage.Content = formData;
+
+        using var responseMessage = await _client.SendAsync(requestMessage, ct);
+        var responseBodyString = await responseMessage.Content.ReadAsStringAsync(ct);
+        return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
+    }
+
     public async Task<Response> UploadBase64Async(string? base64Content, CancellationToken ct)
     {
         var (method, path) = MediaServiceEndpoints.UploadBase64;
