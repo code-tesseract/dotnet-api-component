@@ -89,13 +89,27 @@ public class MediaService : IMediaService
         return JsonConvert.DeserializeObject<Response>(responseBodyString)!;
     }
 
-    public Task<FileStreamResult> PreviewAsync(Guid mediaId, CancellationToken ct)
+    public async Task<(Stream stream, string contentType)> PreviewAsync(string id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var (method, path) = MediaServiceEndpoints.Preview(id);
+        var requestMessage = new HttpRequestMessage(method, path);
+        var responseMessage = await _client.SendAsync(requestMessage, ct);
+        
+        var contentType = responseMessage.Content.Headers.ContentType!.ToString();
+        var stream = await responseMessage.Content.ReadAsStreamAsync(ct);
+        
+        return (stream, contentType);
     }
 
-    public Task<FileStreamResult> PreviewThumbnailAsync(Guid mediaId, CancellationToken ct)
+    public async Task<(Stream stream, string contentType)> PreviewThumbnailAsync(string id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var (method, path) = MediaServiceEndpoints.PreviewThumbnail(id);
+        var requestMessage = new HttpRequestMessage(method, path);
+        var responseMessage = await _client.SendAsync(requestMessage, ct);
+        
+        var contentType = responseMessage.Content.Headers.ContentType!.ToString();
+        var stream = await responseMessage.Content.ReadAsStreamAsync(ct);
+        
+        return (stream, contentType);
     }
 }

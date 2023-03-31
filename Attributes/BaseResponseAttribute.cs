@@ -14,6 +14,15 @@ public class BaseResponseAttribute : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        var allowAnonymousBaseResponse = context.ActionDescriptor.EndpointMetadata
+            .OfType<AllowAnonymousBaseResponseAttribute>().Any();
+
+        if (allowAnonymousBaseResponse)
+        {
+            await next();
+            return;
+        }
+        
         var sw = StopwatchHelper.StartNew();
         var resultContext = await next();
 
