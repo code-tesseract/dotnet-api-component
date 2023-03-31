@@ -12,8 +12,8 @@ public class UploadBase64Command : IRequest<Response>
     
     public class UploadBase64Handler : IRequestHandler<UploadBase64Command, Response>
     {
-        private readonly IMediaService _ms;
-        public UploadBase64Handler(IMediaService ms) => _ms = ms;
+        private readonly IMediaServiceModules _ms;
+        public UploadBase64Handler(IMediaServiceModules ms) => _ms = ms;
 
         public async Task<Response> Handle(UploadBase64Command request, CancellationToken ct)
             => await _ms.UploadBase64Async(request.Base64Content, ct);

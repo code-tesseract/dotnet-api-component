@@ -53,4 +53,30 @@ public class MediaServiceController : BaseController
 
         return File(memoryStream, contentType);
     }
+    
+    [AllowAnonymousBaseResponse]
+    [HttpGet("download/{id}")]
+    public async Task<IActionResult> Download([FromRoute] string id, CancellationToken ct)
+    {
+        var (stream, fileName) = await Mediator.Send(new DownloadCommand(id), ct);
+
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream, ct);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+
+        return File(memoryStream, "application/octet-stream", fileName);
+    }
+    
+    [AllowAnonymousBaseResponse]
+    [HttpGet("download-thumbnail/{id}")]
+    public async Task<IActionResult> DownloadThumbnail([FromRoute] string id, CancellationToken ct)
+    {
+        var (stream, fileName) = await Mediator.Send(new DownloadThumbCommand(id), ct);
+
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream, ct);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+
+        return File(memoryStream, "application/octet-stream", fileName);
+    }
 }

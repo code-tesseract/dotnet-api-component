@@ -13,8 +13,8 @@ public class UploadsCommand : IRequest<Response>
     
     public class UploadsHandler : IRequestHandler<UploadsCommand, Response>
     {
-        private readonly IMediaService _ms;
-        public UploadsHandler(IMediaService ms) => _ms = ms;
+        private readonly IMediaServiceModules _ms;
+        public UploadsHandler(IMediaServiceModules ms) => _ms = ms;
 
         public async Task<Response> Handle(UploadsCommand request, CancellationToken ct)
             => await _ms.UploadsAsync(request.Files, ct);

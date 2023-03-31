@@ -12,8 +12,8 @@ public class PreviewThumbCommand : IRequest<(Stream stream, string contentType)>
 
     public class PreviewThumbHandler : IRequestHandler<PreviewThumbCommand, (Stream stream, string contentType)>
     {
-        private readonly IMediaService _ms;
-        public PreviewThumbHandler(IMediaService ms) => _ms = ms;
+        private readonly IMediaServiceModules _ms;
+        public PreviewThumbHandler(IMediaServiceModules ms) => _ms = ms;
 
         public async Task<(Stream stream, string contentType)> Handle(PreviewThumbCommand request, CancellationToken ct)
             => await _ms.PreviewThumbnailAsync(request.Id, ct);

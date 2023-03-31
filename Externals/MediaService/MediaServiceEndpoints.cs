@@ -9,4 +9,6 @@ public static class MediaServiceEndpoints
     public static (HttpMethod m, string p) Preview(string r) => (HttpMethod.Get, Path.Combine("preview", r));
 
     public static (HttpMethod m, string p) PreviewThumbnail(string r) => (HttpMethod.Get, Path.Combine("preview-thumbnail", r));
+    public static (HttpMethod m, string p) Download(string r) => (HttpMethod.Get, Path.Combine("download", r));
+    public static (HttpMethod m, string p) DownloadThumbnail(string r) => (HttpMethod.Get, Path.Combine("download-thumbnail", r));
 }

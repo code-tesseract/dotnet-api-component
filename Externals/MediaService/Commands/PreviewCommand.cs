@@ -12,8 +12,8 @@ public class PreviewCommand : IRequest<(Stream stream, string contentType)>
 
     public class PreviewHandler : IRequestHandler<PreviewCommand, (Stream stream, string contentType)>
     {
-        private readonly IMediaService _ms;
-        public PreviewHandler(IMediaService ms) => _ms = ms;
+        private readonly IMediaServiceModules _ms;
+        public PreviewHandler(IMediaServiceModules ms) => _ms = ms;
 
         public async Task<(Stream stream, string contentType)> Handle(PreviewCommand request, CancellationToken ct)
             => await _ms.PreviewAsync(request.Id, ct);

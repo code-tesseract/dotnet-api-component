@@ -78,8 +78,8 @@ public static class ComponentServiceExtension
         var sp = sc.BuildServiceProvider();
         var mediaSetting = sp.GetRequiredService<IOptions<MediaServiceSetting>>().Value;
 
-        sc.AddTransient<MediaServiceHandler>();
-        sc.AddTransient<IMediaService, MediaService>();
+        sc.AddScoped<MediaServiceHandler>();
+        sc.AddScoped<IMediaServiceModules, MediaServiceModules>();
         sc.AddHttpClient("MediaServiceClient", m => m.BaseAddress = new Uri(mediaSetting.Url))
             .AddHttpMessageHandler<MediaServiceHandler>();
     }
