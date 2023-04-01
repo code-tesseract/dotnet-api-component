@@ -26,6 +26,7 @@ public class BaseDbContext : DbContext
             $"Data Source={_dbSetting.InstanceName};" +
             $"Initial Catalog={_dbSetting.DatabaseName};" +
             $"Integrated Security={_dbSetting.IntegratedSecurity.ToString()};" +
+			$"TrustServerCertificate={_dbSetting.TrustServerCertificate.ToString()};" +
             $"User id={_dbSetting.Username};" +
             $"Password={_dbSetting.Password}"
         );
