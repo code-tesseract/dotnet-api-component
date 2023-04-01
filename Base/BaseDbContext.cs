@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Component.Entities;
 using Component.Exceptions;
 using EntityFramework.Exceptions.SqlServer;
-using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
 // ReSharper disable VirtualMemberCallInConstructor
