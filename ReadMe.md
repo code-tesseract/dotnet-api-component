@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/yiisoft" target="_blank"><img src="https://d585tldpucybw.cloudfront.net/sfimages/default-source/default-album/t-com_netcore_770px.png?sfvrsn=44c053c4_0" height="250px" alt=""></a></p>
+<div align="center"><img src="https://d585tldpucybw.cloudfront.net/sfimages/default-source/default-album/t-com_netcore_770px.png?sfvrsn=44c053c4_0" width="300px" alt="Dotnet API Boilerplate"></div>
 <h1 align="center">Dotnet API Base</h1>
 <br/>
 
