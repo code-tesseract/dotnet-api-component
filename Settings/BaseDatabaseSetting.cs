@@ -7,7 +7,7 @@ public class BaseDatabaseSetting
     public string InstanceName { get; set; } = null!;
     public string DatabaseName { get; set; } = null!;
     public bool IntegratedSecurity { get; set; } = true;
-	public bool TrustServerCertificate { get; set; } = false;
+	public bool TrustServerCertificate { get; set; }
     public string? Username { get; set; }
     public string? Password { get; set; }
 }
