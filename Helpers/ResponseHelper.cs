@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Component.Filters;
+using Component.Models.Pagination;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

@@ -1,4 +1,4 @@
-﻿namespace Component.Filters;
+﻿namespace Component.Models.Pagination;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ClassNeverInstantiated.Global
