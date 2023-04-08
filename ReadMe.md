@@ -1,13 +1,13 @@
 <div align="center"><img src="https://d585tldpucybw.cloudfront.net/sfimages/default-source/default-album/t-com_netcore_770px.png?sfvrsn=44c053c4_0" width="300px" alt="Dotnet API Boilerplate"></div>
-<h1 align="center">Dotnet API Base</h1>
+<h1 align="center">Dotnet API Component</h1>
 <br/>
 
 <table>
 <tr><th colspan="2">⚙️ Tech Stack</th></tr>
-<tr><td>Progamming Language</td><td>C#</td></tr>
-<tr><td>Framework</td><td>ASP.NET Core 6</td></tr>
-<tr><td>Web Server</td><td>Kestrel</td></tr>
-<tr><td>Database</td><td>Entity Framework Core (EF Core)</td></tr>
+<tr><td>Progamming Language</td><td>CSharp v10.0</td></tr>
+<tr><td>Target Framework</td><td>.NET 6.0</td></tr>
+<tr><td>Project Type</td><td>Class Library</td></tr>
+<tr><td>ORM</td><td>Entity Framework Core</td></tr>
 <tr><td>Serialization</td><td>JSON using Newtonsoft.Json</td></tr>
 </table>
 

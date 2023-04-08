@@ -1,11 +1,9 @@
-﻿using Component.Settings;
+﻿using Component.Entities;
+using Component.Settings;
+using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Component.Entities;
-using Component.Exceptions;
-using EntityFramework.Exceptions.SqlServer;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 // ReSharper disable VirtualMemberCallInConstructor
 
@@ -39,8 +37,8 @@ public class BaseDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
-        mb.UseCollation(_dbSetting.CollationType.IsNullOrEmpty()
-            ? "SQL_Latin1_General_CP1_CI_AS"
+        mb.UseCollation(_dbSetting.CollationType.IsNullOrEmpty() 
+            ? "SQL_Latin1_General_CP1_CI_AS" 
             : _dbSetting.CollationType);
 
         mb.Entity<Client>(e => e.Property(c => c.Status).HasDefaultValueSql($"('{Entities.Client.StatusActive}')"));
@@ -58,12 +56,16 @@ public class BaseDbContext : DbContext
     public override int SaveChanges()
     {
         ChangeTracker.Entries<BaseEntity>().DatetimeBehavior("CreatedAt", "UpdatedAt");
+        ChangeTracker.Entries<BaseEntity>().OwnerBehavior("CreatedBy", "UpdatedBy");
+        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("IsDeleted", "DeletedBy", "DeletedAt");
         return base.SaveChanges();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = new())
     {
         ChangeTracker.Entries<BaseEntity>().DatetimeBehavior("CreatedAt", "UpdatedAt");
+        ChangeTracker.Entries<BaseEntity>().OwnerBehavior("CreatedBy", "UpdatedBy");
+        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("IsDeleted", "DeletedBy", "DeletedAt");
         return await base.SaveChangesAsync(ct);
     }
 }
