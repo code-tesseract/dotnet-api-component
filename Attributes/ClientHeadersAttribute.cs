@@ -20,7 +20,7 @@ public class ClientHeadersAttribute : Attribute, IAsyncActionFilter
         
         if (!allowAnonymous)
         {
-            var db = context.HttpContext.RequestServices.GetService<BaseDbContext>();
+            var db = context.HttpContext.RequestServices.GetService<BaseAppDbContext>();
             if (db == null) throw new HttpException(503, "System is unavailable right now, please contact help desk.");
 
             var appSetting = context.HttpContext.RequestServices

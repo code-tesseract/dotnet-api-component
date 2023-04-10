@@ -1,56 +1,21 @@
-﻿using Component.Entities;
-using Component.Settings;
-using EntityFramework.Exceptions.SqlServer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-
-// ReSharper disable VirtualMemberCallInConstructor
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Component.Base;
 
 public class BaseDbContext : DbContext
 {
-    private readonly BaseDatabaseSetting _dbSetting;
-
-    public BaseDbContext(IOptions<BaseDatabaseSetting> dbSetting)
+    protected BaseDbContext(DbContextOptions options) : base(options)
     {
-        _dbSetting = dbSetting.Value;
-        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder opt)
+    protected BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options)
     {
-        opt.UseSqlServer(
-            $"Data Source={_dbSetting.InstanceName};" +
-            $"Initial Catalog={_dbSetting.DatabaseName};" +
-            $"Integrated Security={_dbSetting.IntegratedSecurity.ToString()};" +
-            $"TrustServerCertificate={_dbSetting.TrustServerCertificate.ToString()};" +
-            $"User id={_dbSetting.Username};" +
-            $"Password={_dbSetting.Password}"
-        );
-        opt.UseExceptionProcessor();
     }
-
-    public DbSet<Client> Client { get; set; } = null!;
-    public DbSet<ClientWhitelist> ClientWhitelist { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
-        mb.UseCollation(_dbSetting.CollationType.IsNullOrEmpty() 
-            ? "SQL_Latin1_General_CP1_CI_AS" 
-            : _dbSetting.CollationType);
-
-        mb.Entity<Client>(e => e.Property(c => c.Status).HasDefaultValueSql($"('{Entities.Client.StatusActive}')"));
-        mb.Entity<ClientWhitelist>(e =>
-        {
-            e.Property(c => c.Status).HasDefaultValueSql($"('{Entities.ClientWhitelist.StatusActive}')");
-            e.HasOne(c => c.Client)
-                .WithMany(p => p.ClientWhitelists)
-                .HasForeignKey(c => c.ClientId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("ForeignKeyClientClientWhitelist");
-        });
+        mb.Entity<BaseEntity>().HasQueryFilter(b => b.IsDeleted == false);
+        mb.Ignore<BaseEntity>();
     }
 
     public override int SaveChanges()

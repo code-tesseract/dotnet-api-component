@@ -1,28 +1,38 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Component.Base;
 
 public class BaseEntity
 {
+    protected bool IsSoftDelete;
+    
     protected BaseEntity()
     {
-        var guid = Guid.NewGuid();
+        var guid = new Guid();
         Id = guid.ToString().ToLower();
     }
     
     [Key]
-    [Column(Order = 0)]
     [StringLength(36)]
     public string Id { get; set; }
-
-    [Column(TypeName = "datetime", Order = 99)]
+    
+    [StringLength(36)]
+    public string? CreatedBy { get; set; }
+    
+    [Column(TypeName = "datetime")]
     public DateTime CreatedAt { get; set; }
-
-    [Column(TypeName = "datetime", Order = 100)]
+    
+    [StringLength(36)]
+    public string? UpdatedBy { get; set; }
+    
+    [Column(TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; }
+    
+    [StringLength(36)]
+    public string? DeletedBy { get; set; }
+    
+    [Column(TypeName = "datetime")]
+    public DateTime? DeletedAt { get; set; }
 }

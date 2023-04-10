@@ -55,11 +55,14 @@ public static class ComponentServiceExtension
     public static void AddComponentSettings(this IServiceCollection sc, IConfiguration conf)
     {
         sc.Configure<AppSetting>(conf.GetSection("AppSetting"));
-        sc.Configure<BaseDatabaseSetting>(conf.GetSection("BaseDatabaseSetting"));
         sc.Configure<MediaServiceSetting>(conf.GetSection("MediaServiceSetting"));
     }
 
-    public static void AddComponentBaseDbContext(this IServiceCollection sc) => sc.AddDbContext<BaseDbContext>();
+    public static void AddComponentBaseDbContext(this IServiceCollection sc)
+    {
+        sc.AddDbContext<BaseDbContext>();
+        sc.AddDbContext<BaseAppDbContext>();
+    } 
 
     public static void AddComponentMediatR(this IServiceCollection sc) =>
         sc.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());

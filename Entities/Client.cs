@@ -3,11 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Component.Base;
 using Microsoft.EntityFrameworkCore;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
-
 namespace Component.Entities;
 
 [Table("Client")]
