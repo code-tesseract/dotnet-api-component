@@ -17,6 +17,10 @@ public class DefaultPaginationFilter
     [JsonProperty("per-page")] 
     public int PerPage { get; set; }
     
+    [FromQuery(Name = "filters")] 
+    [JsonProperty("filters")] 
+    public string? Filters { get; set; }
+    
     [FromQuery(Name = "first-request-time")] 
     [JsonProperty("first-request-time")] 
     public int FirstRequestTime { get; set; }
@@ -24,11 +28,7 @@ public class DefaultPaginationFilter
     [FromQuery(Name = "sort")] 
     [JsonProperty("sort")] 
     public string? Sort { get; set; }
-    
-    [FromQuery(Name = "filters")] 
-    [JsonProperty("filters")] 
-    public string? Filters { get; set; }
-    
+
     [FromQuery(Name = "is-all")] 
     [JsonProperty("is-all")] 
     public bool? IsAll { get; set; }
@@ -37,6 +37,7 @@ public class DefaultPaginationFilter
     {
         Page = 1;
         PerPage = 10;
+        Filters = null;
         FirstRequestTime = DatetimeHelper.ToUnixTimeSeconds();
         Sort = null;
         IsAll = false;

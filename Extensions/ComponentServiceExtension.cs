@@ -24,7 +24,6 @@ public static class ComponentServiceExtension
         sc.AddComponentBaseController();
         sc.AddComponentAccessor();
         sc.AddComponentSettings(conf);
-        sc.AddComponentBaseDbContext();
         sc.AddComponentMediatR();
         sc.AddComponentValidationBehavior();
         sc.AddComponentValidatorsFromAssembly();
@@ -57,12 +56,6 @@ public static class ComponentServiceExtension
         sc.Configure<AppSetting>(conf.GetSection("AppSetting"));
         sc.Configure<MediaServiceSetting>(conf.GetSection("MediaServiceSetting"));
     }
-
-    public static void AddComponentBaseDbContext(this IServiceCollection sc)
-    {
-        sc.AddDbContext<BaseDbContext>();
-        sc.AddDbContext<BaseAppDbContext>();
-    } 
 
     public static void AddComponentMediatR(this IServiceCollection sc) =>
         sc.AddMediatR(AppDomain.CurrentDomain.GetAssemblies());
