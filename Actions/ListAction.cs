@@ -17,13 +17,11 @@ public class ListAction<TEntity>
 {
     public IQueryable<TEntity> Query { get; set; }
     public object QueryParams { get; set; }
-    public string? SuccessMessage { get; set; }
 
-    public ListAction(IQueryable<TEntity> query, object queryParams, string? successMessage = null)
+    public ListAction(IQueryable<TEntity> query, object queryParams)
     {
         Query = query;
         QueryParams = queryParams;
-        SuccessMessage = successMessage ?? $"The {typeof(TEntity).Name.ToLower()} list loaded successfully.";
     }
 
     public async Task<(int totalRecord, List<TEntity> data)> ToPagedAsync(CancellationToken ct = default)
@@ -101,19 +99,19 @@ public class ListAction<TEntity>
             {
                 switch (filter.Operator)
                 {
-                    case FilterOperators.EqualOperator:
+                    case OperatorsFilter.EqualOperator:
                         filteredQuery = filteredQuery.Where($"{filter.Field} == @0", filter.Value);
                         break;
-                    case FilterOperators.NotEqualOperator:
+                    case OperatorsFilter.NotEqualOperator:
                         filteredQuery = filteredQuery.Where($"{filter.Field} != @0", filter.Value);
                         break;
-                    case FilterOperators.LikeOperator:
+                    case OperatorsFilter.LikeOperator:
                         filteredQuery = filteredQuery.Where($"{filter.Field}.Contains(@0)", filter.Value);
                         break;
-                    case FilterOperators.NotLikeOperator:
+                    case OperatorsFilter.NotLikeOperator:
                         filteredQuery = filteredQuery.Where($"!{filter.Field}.Contains(@0)", filter.Value);
                         break;
-                    case FilterOperators.BetweenOperator:
+                    case OperatorsFilter.BetweenOperator:
                     {
                         object from = null!;
                         object until = null!;
@@ -146,32 +144,32 @@ public class ListAction<TEntity>
                             until);
                         break;
                     }
-                    case FilterOperators.LessThanOperator:
+                    case OperatorsFilter.LessThanOperator:
                     {
                         filteredQuery = filteredQuery.Where($"{filter.Field} < @0", filter.Value);
                         break;
                     }
-                    case FilterOperators.LessThanEqualOperator:
+                    case OperatorsFilter.LessThanEqualOperator:
                     {
                         filteredQuery = filteredQuery.Where($"{filter.Field} <= @0", filter.Value);
                         break;
                     }
-                    case FilterOperators.GreaterThanOperator:
+                    case OperatorsFilter.GreaterThanOperator:
                     {
                         filteredQuery = filteredQuery.Where($"{filter.Field} > @0", filter.Value);
                         break;
                     }
-                    case FilterOperators.GreaterThanEqualOperator:
+                    case OperatorsFilter.GreaterThanEqualOperator:
                     {
                         filteredQuery = filteredQuery.Where($"{filter.Field} >= @0", filter.Value);
                         break;
                     }
-                    case FilterOperators.InOperator:
+                    case OperatorsFilter.InOperator:
                     {
                         filteredQuery = filteredQuery.Where($"{(JArray)filter.Value}.Contains(@0)", filter.Field);
                         break;
                     }
-                    case FilterOperators.NotInOperator:
+                    case OperatorsFilter.NotInOperator:
                     {
                         filteredQuery = filteredQuery.Where($"!{(JArray)filter.Value}.Contains(@0)", filter.Field);
                         break;

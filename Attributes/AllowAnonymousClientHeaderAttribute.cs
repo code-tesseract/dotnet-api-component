@@ -2,6 +2,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class AllowAnonymousClientHeadersAttribute : Attribute
+public class AllowAnonymousClientHeaderAttribute : Attribute
 {
 }

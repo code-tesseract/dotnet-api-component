@@ -1,6 +1,6 @@
 ﻿namespace Component.Filters;
 
-public static class FilterOperators
+public static class OperatorsFilter
 {
     public const string EqualOperator = "=";
     public const string NotEqualOperator = "!=";
