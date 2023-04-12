@@ -12,7 +12,7 @@ public class BaseAppDbContext : BaseDbContext
     {
     }
 
-    protected BaseAppDbContext(DbContextOptions<BaseAppDbContext> options) : base(options)
+    public BaseAppDbContext(DbContextOptions<BaseAppDbContext> options) : base(options)
     {
     }
 

@@ -8,7 +8,7 @@ public class BaseDbContext : DbContext
     {
     }
 
-    protected BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options)
+    public BaseDbContext(DbContextOptions<BaseDbContext> options) : base(options)
     {
     }
 

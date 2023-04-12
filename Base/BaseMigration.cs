@@ -1,12 +1,25 @@
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
 
-namespace Component.Helpers;
+namespace Component.Base;
 
-public static class MigrationHelper
+public class BaseMigration<TEntity> : Migration where TEntity : class
 {
-    public static void SetPrimaryKey(
-        this MigrationBuilder builder,
-        string table,
+    private readonly string _tableName;
+    protected BaseMigration() => _tableName = typeof(TEntity).Name;
+
+    protected void CreateTable<TColumns>(
+        MigrationBuilder builder,
+        Func<ColumnsBuilder, TColumns> columns,
+        string? schema = null,
+        string? comment = null
+    ) => builder.CreateTable(name: _tableName, columns: columns, schema: schema, comment: comment);
+
+    protected void DropTable(MigrationBuilder builder, string? schema = null)
+        => builder.DropTable(_tableName, schema);
+
+    protected void SetPrimaryKey(
+        MigrationBuilder builder,
         object column,
         string? schema = null
     )
@@ -15,16 +28,16 @@ public static class MigrationHelper
         {
             case string[] columns:
                 builder.AddPrimaryKey(
-                    name: SetPrimaryKeyName(table, column),
-                    table: table,
+                    name: SetPrimaryKeyName(column),
+                    table: _tableName,
                     columns: columns,
                     schema: schema
                 );
                 break;
             case string columnString:
                 builder.AddPrimaryKey(
-                    name: SetPrimaryKeyName(table, column),
-                    table: table,
+                    name: SetPrimaryKeyName(column),
+                    table: _tableName,
                     column: columnString,
                     schema: schema
                 );
@@ -33,10 +46,9 @@ public static class MigrationHelper
                 throw new Exception("Invalid primary key format.");
         }
     }
-    
-    public static void SetIndex(
-        this MigrationBuilder builder,
-        string table,
+
+    protected void SetIndex(
+        MigrationBuilder builder,
         object column,
         string? schema = null,
         bool unique = false,
@@ -49,8 +61,8 @@ public static class MigrationHelper
             case string[] columns:
             {
                 builder.CreateIndex(
-                    name: SetIndexName(table, columns, unique),
-                    table: table,
+                    name: SetIndexName(columns, unique),
+                    table: _tableName,
                     columns: columns,
                     schema: schema,
                     unique: unique,
@@ -61,8 +73,8 @@ public static class MigrationHelper
             }
             case string col:
                 builder.CreateIndex(
-                    name: SetIndexName(table, col, unique),
-                    table: table,
+                    name: SetIndexName(col, unique),
+                    table: _tableName,
                     column: col,
                     schema: schema,
                     unique: unique,
@@ -75,9 +87,8 @@ public static class MigrationHelper
         }
     }
 
-    public static void SetForeignKey(
-        this MigrationBuilder builder,
-        string table,
+    public void SetForeignKey(
+        MigrationBuilder builder,
         object column,
         string principalTable,
         string? schema = null,
@@ -91,8 +102,8 @@ public static class MigrationHelper
         {
             case string[] columns when principalColumn is string[] principalColumns:
                 builder.AddForeignKey(
-                    name: SetForeignKeyName(table, column, principalTable, principalColumn),
-                    table: table,
+                    name: SetForeignKeyName(column, principalTable, principalColumn),
+                    table: _tableName,
                     columns: columns,
                     principalTable: principalTable,
                     schema: schema,
@@ -104,8 +115,8 @@ public static class MigrationHelper
                 break;
             case string columnString when principalColumn is string principalColumnString:
                 builder.AddForeignKey(
-                    name: SetForeignKeyName(table, column, principalTable, principalColumn),
-                    table: table,
+                    name: SetForeignKeyName(column, principalTable, principalColumn),
+                    table: _tableName,
                     column: columnString,
                     principalTable: principalTable,
                     schema: schema,
@@ -120,8 +131,9 @@ public static class MigrationHelper
         }
     }
 
-    private static string SetPrimaryKeyName(string table, object column)
+    private string SetPrimaryKeyName(object column)
     {
+        var table = _tableName;
         if (!string.IsNullOrEmpty(table) && table.Length > 1)
             table = char.ToUpper(table[0]) + table[1..].ToLower();
         else table = char.ToUpper(table[0]).ToString();
@@ -133,9 +145,10 @@ public static class MigrationHelper
         return $"PK_{table}__{columnString}";
     }
 
-    private static string SetIndexName(string table, object column, bool unique)
+    private string SetIndexName(object column, bool unique)
     {
         var indexPrefix = unique ? "UQ" : "IX";
+        var table = _tableName;
 
         if (!string.IsNullOrEmpty(table) && table.Length > 1)
             table = $"{table[0].ToString().ToUpper() + table[1..].ToLower()}";
@@ -148,8 +161,9 @@ public static class MigrationHelper
         return $"{indexPrefix}_{table}__{columnString}";
     }
 
-    private static string SetForeignKeyName(string table, object column, string principalTable, object principalColumn)
+    private string SetForeignKeyName(object column, string principalTable, object principalColumn)
     {
+        var table = _tableName;
         if (!string.IsNullOrEmpty(table) && table.Length > 1)
             table = char.ToUpper(table[0]) + table[1..].ToLower();
         else table = char.ToUpper(table[0]).ToString();
@@ -163,5 +177,9 @@ public static class MigrationHelper
         else principalColumnString = (string)column;
 
         return $"FK_{table}__{columnString}_{principalTable}__{principalColumnString}";
+    }
+
+    protected override void Up(MigrationBuilder migrationBuilder)
+    {
     }
 }
