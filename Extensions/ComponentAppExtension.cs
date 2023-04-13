@@ -22,7 +22,7 @@ public static class ComponentAppExtension
         ab.AddComponentMiddlewares();
         ab.UseRouting();
         ab.UseEndpoints(e => e.MapControllers());
-    }   
+    }
 
     public static void AddComponentCors(this IApplicationBuilder ab) =>
         ab.UseCors(cpb => cpb
@@ -40,15 +40,12 @@ public static class ComponentAppExtension
     public static async Task AppRunAsync(this WebApplication wa)
     {
         var appSetting = wa.Services.GetRequiredService<IOptions<AppSetting>>().Value;
-        var ub = new UriBuilder(appSetting.AppUrl);
-
         wa.MapGet("/", (HttpContext context) => JsonConvert.SerializeObject(new Response(
             name: appSetting.AppName,
             message: $"{appSetting.AppName} is running",
             data: $"You are accessing this endpoint from {IdentityHelper.GetClientIp(context)}"
         )));
 
-        wa.Environment.EnvironmentName = appSetting.AppEnv;
-        await wa.RunAsync(ub.Uri.AbsoluteUri);
+        await wa.RunAsync();
     }
 }

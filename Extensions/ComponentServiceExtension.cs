@@ -26,7 +26,6 @@ public static class ComponentServiceExtension
         sc.AddComponentSettings(conf);
         sc.AddComponentMediatR();
         sc.AddComponentValidationBehavior();
-        sc.AddComponentValidatorsFromAssembly();
         sc.AddConfigureApiBehaviorOptions();
         sc.AddMediaServiceClient();
     }
@@ -63,10 +62,6 @@ public static class ComponentServiceExtension
     public static void AddComponentValidationBehavior(this IServiceCollection sc) =>
         sc.AddTransient(typeof(IPipelineBehavior<,>), typeof(BaseValidationBehavior<,>));
 
-    public static void AddComponentValidatorsFromAssembly(this IServiceCollection sc)
-    {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) sc.AddValidatorsFromAssembly(assembly);
-    }
 
     public static void AddConfigureApiBehaviorOptions(this IServiceCollection sc) =>
         sc.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
