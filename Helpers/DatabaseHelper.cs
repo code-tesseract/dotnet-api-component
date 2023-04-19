@@ -50,9 +50,9 @@ public static class DatabaseHelper
     {
         return $"Data Source={dbSetting.InstanceName};" +
                $"Initial Catalog={dbSetting.DatabaseName};" +
-               $"Integrated Security={dbSetting.IntegratedSecurity.ToString()};" +
-               $"TrustServerCertificate={dbSetting.TrustServerCertificate.ToString()};" +
-               $"MultipleActiveResultSets={dbSetting.MultipleActiveResultSets.ToString()};" +
+               $"Integrated Security={dbSetting.IntegratedSecurity.ToString().ToTitleCase()};" +
+               $"TrustServerCertificate={dbSetting.TrustServerCertificate.ToString().ToTitleCase()};" +
+               $"MultipleActiveResultSets={dbSetting.MultipleActiveResultSets.ToString().ToTitleCase()};" +
                $"User id={dbSetting.Username};" +
                $"Password={dbSetting.Password}" +
                $"Collation={dbSetting.CollationType}";

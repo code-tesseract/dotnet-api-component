@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-// ReSharper disable InvertIf
-// ReSharper disable UnusedAutoPropertyAccessor.Local
-// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
-
 namespace Component.Base;
 
 public static class BaseBehaviors
@@ -65,19 +61,18 @@ public static class BaseBehaviors
     {
         foreach (var entry in entries)
         {
-            if (entry.State is EntityState.Deleted)
-            {
-                var isSoftDelete = entry.Metadata.FindProperty("IsSoftDelete");
-                
-                
-                entry.State = EntityState.Modified;
-                if (isDeletedAttribute != null && entry.Metadata.FindProperty(isDeletedAttribute) != null)
-                    entry.Property(isDeletedAttribute).CurrentValue = true;
-                if (deletedByAttribute != null && entry.Metadata.FindProperty(deletedByAttribute) != null)
-                    entry.Property(deletedByAttribute).CurrentValue = DateTime.UtcNow;
-                if (deletedAtAttribute != null && entry.Metadata.FindProperty(deletedAtAttribute) != null)
-                    entry.Property(deletedAtAttribute).CurrentValue = _identityOwnerId;
-            }
+            if (entry.State is not EntityState.Deleted) continue;
+            var isSoftDelete = entry.Metadata.FindProperty("IsSoftDelete");
+            if (isSoftDelete == null) continue;
+            if (!entry.CurrentValues.GetValue<bool>("IsSoftDelete")) continue;
+
+            entry.State = EntityState.Modified;
+            if (isDeletedAttribute != null && entry.Metadata.FindProperty(isDeletedAttribute) != null)
+                entry.Property(isDeletedAttribute).CurrentValue = true;
+            if (deletedByAttribute != null && entry.Metadata.FindProperty(deletedByAttribute) != null)
+                entry.Property(deletedByAttribute).CurrentValue = DateTime.UtcNow;
+            if (deletedAtAttribute != null && entry.Metadata.FindProperty(deletedAtAttribute) != null)
+                entry.Property(deletedAtAttribute).CurrentValue = _identityOwnerId;
         }
     }
 }

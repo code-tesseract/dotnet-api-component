@@ -1,18 +1,20 @@
 ﻿using Component.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Component.Helpers;
 
 public static class UriHelper
 {
-    private static IHttpContextAccessor _accessor = null!;
+    private static IHttpContextAccessor? _accessor;
 
-    public static void Initialize(IHttpContextAccessor accessor) => _accessor = accessor;
+    public static void ConfigureUriHelper(this IServiceProvider serviceProvider)
+        => _accessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
     public static Uri GetPageUri(DefaultPaginationFilter filter)
     {
-        var hr = _accessor.HttpContext?.Request;
+        var hr = _accessor?.HttpContext?.Request;
         var baseUrl = string.Concat(hr?.Scheme, "://", hr?.Host.ToUriComponent());
 
         var pageUri = new Uri(string.Concat(baseUrl, hr?.Path.Value)).AbsoluteUri;

@@ -9,7 +9,7 @@ public class BaseEntity
     
     protected BaseEntity()
     {
-        var guid = new Guid();
+        var guid = Guid.NewGuid();
         Id = guid.ToString().ToLower();
     }
     

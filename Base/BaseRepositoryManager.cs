@@ -3,7 +3,20 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Component.Base;
 
-public class BaseRepositoryManager<TContext> where TContext : DbContext
+public interface IBaseRepositoryManager<TContext> where TContext : DbContext
+{
+    void Save();
+    IDbContextTransaction Transaction();
+    void Commit(IDbContextTransaction tr);
+    void Rollback(IDbContextTransaction tr);
+
+    Task SaveAsync(CancellationToken ct);
+    Task<IDbContextTransaction> TransactionAsync(CancellationToken ct);
+    Task CommitAsync(IDbContextTransaction tr, CancellationToken ct);
+    Task RollbackAsync(IDbContextTransaction tr, CancellationToken ct);
+}
+
+public class BaseRepositoryManager<TContext> : IBaseRepositoryManager<TContext> where TContext : DbContext
 {
     private readonly TContext _context;
     protected BaseRepositoryManager(TContext context) => _context = context;
