@@ -54,7 +54,7 @@ public static class DatabaseHelper
                $"TrustServerCertificate={dbSetting.TrustServerCertificate.ToString().ToTitleCase()};" +
                $"MultipleActiveResultSets={dbSetting.MultipleActiveResultSets.ToString().ToTitleCase()};" +
                $"User id={dbSetting.Username};" +
-               $"Password={dbSetting.Password}" +
+               $"Password={dbSetting.Password};" +
                $"Collation={dbSetting.CollationType}";
     }
 }
