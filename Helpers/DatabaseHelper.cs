@@ -55,6 +55,5 @@ public static class DatabaseHelper
                $"MultipleActiveResultSets={dbSetting.MultipleActiveResultSets.ToString().ToTitleCase()};" +
                $"User id={dbSetting.Username};" +
                $"Password={dbSetting.Password}";
-        // $"Collation={dbSetting.CollationType}";
     }
 }
