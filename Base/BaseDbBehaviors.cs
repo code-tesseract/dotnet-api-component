@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
+// ReSharper disable InvertIf
+
 namespace Component.Base;
 
 public static class BaseBehaviors
@@ -54,25 +56,20 @@ public static class BaseBehaviors
 
     public static void SoftDeleteBehavior(
         this IEnumerable<EntityEntry> entries,
-        string? isDeletedAttribute = null,
         string? deletedByAttribute = null,
         string? deletedAtAttribute = null
     )
     {
         foreach (var entry in entries)
         {
-            if (entry.State is not EntityState.Deleted) continue;
-            var isSoftDelete = entry.Metadata.FindProperty("IsSoftDelete");
-            if (isSoftDelete == null) continue;
-            if (!entry.CurrentValues.GetValue<bool>("IsSoftDelete")) continue;
-
-            entry.State = EntityState.Modified;
-            if (isDeletedAttribute != null && entry.Metadata.FindProperty(isDeletedAttribute) != null)
-                entry.Property(isDeletedAttribute).CurrentValue = true;
-            if (deletedByAttribute != null && entry.Metadata.FindProperty(deletedByAttribute) != null)
-                entry.Property(deletedByAttribute).CurrentValue = DateTime.UtcNow;
-            if (deletedAtAttribute != null && entry.Metadata.FindProperty(deletedAtAttribute) != null)
-                entry.Property(deletedAtAttribute).CurrentValue = _identityOwnerId;
+            if (entry.State is EntityState.Deleted)
+            {
+                if (deletedByAttribute != null && entry.Metadata.FindProperty(deletedByAttribute) != null)
+                    entry.Property(deletedByAttribute).CurrentValue = _identityOwnerId;
+                if (deletedAtAttribute != null && entry.Metadata.FindProperty(deletedAtAttribute) != null)
+                    entry.Property(deletedAtAttribute).CurrentValue = DateTime.UtcNow;
+                entry.State = EntityState.Modified;
+            }
         }
     }
 }

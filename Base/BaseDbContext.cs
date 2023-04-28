@@ -14,7 +14,7 @@ public class BaseDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
-        mb.Entity<BaseEntity>().HasQueryFilter(b => b.IsDeleted == false);
+        mb.Entity<BaseEntity>().HasQueryFilter(b => b.DeletedAt == null);
         mb.Ignore<BaseEntity>();
     }
 
@@ -22,7 +22,7 @@ public class BaseDbContext : DbContext
     {
         ChangeTracker.Entries<BaseEntity>().DatetimeBehavior("CreatedAt", "UpdatedAt");
         ChangeTracker.Entries<BaseEntity>().OwnerBehavior("CreatedBy", "UpdatedBy");
-        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("IsDeleted", "DeletedBy", "DeletedAt");
+        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("DeletedBy", "DeletedAt");
         return base.SaveChanges();
     }
 
@@ -30,13 +30,15 @@ public class BaseDbContext : DbContext
     {
         ChangeTracker.Entries<BaseEntity>().DatetimeBehavior("CreatedAt", "UpdatedAt");
         ChangeTracker.Entries<BaseEntity>().OwnerBehavior("CreatedBy", "UpdatedBy");
-        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("IsDeleted", "DeletedBy", "DeletedAt");
+        ChangeTracker.Entries<BaseEntity>().SoftDeleteBehavior("DeletedBy", "DeletedAt");
         return await base.SaveChangesAsync(ct);
     }
 
     protected static string SetKeyName(string table, string column) => $"PK_{table}__{column}";
+
     protected static string SetConstraintName(string table, string column, string refTable, string refColumn)
         => $"FK_{table}__{column}_{refTable}__{refColumn}";
+
     protected static string SetIndexName(string table, object column, bool unique = false)
     {
         var indexPrefix = unique ? "UQ" : "IX";

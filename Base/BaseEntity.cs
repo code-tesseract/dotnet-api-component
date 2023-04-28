@@ -5,8 +5,6 @@ namespace Component.Base;
 
 public class BaseEntity
 {
-    protected bool IsSoftDelete;
-    
     protected BaseEntity()
     {
         var guid = Guid.NewGuid();
@@ -28,7 +26,6 @@ public class BaseEntity
     
     [Column(TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
     
     [StringLength(36)]
     public string? DeletedBy { get; set; }

@@ -32,7 +32,6 @@ public class BaseAppDbContext : BaseDbContext
             e.HasIndex(p => p.CreatedAt, SetIndexName("Client", "CreatedAt")).IsDescending();
             e.HasIndex(p => p.UpdatedBy, SetIndexName("Client", "UpdatedBy"));
             e.HasIndex(p => p.UpdatedAt, SetIndexName("Client", "UpdatedAt")).IsDescending();
-            e.HasIndex(p => p.IsDeleted, SetIndexName("Client", "IsDeleted"));
             e.HasIndex(p => p.DeletedBy, SetIndexName("Client", "DeletedBy"));
             e.HasIndex(p => p.DeletedAt, SetIndexName("Client", "DeletedAt")).IsDescending();
         });
@@ -55,7 +54,6 @@ public class BaseAppDbContext : BaseDbContext
             e.HasIndex(p => p.CreatedAt, SetIndexName("ClientWhitelist", "CreatedAt")).IsDescending();
             e.HasIndex(p => p.UpdatedBy, SetIndexName("ClientWhitelist", "UpdatedBy"));
             e.HasIndex(p => p.UpdatedAt, SetIndexName("ClientWhitelist", "UpdatedAt")).IsDescending();
-            e.HasIndex(p => p.IsDeleted, SetIndexName("ClientWhitelist", "IsDeleted"));
             e.HasIndex(p => p.DeletedBy, SetIndexName("ClientWhitelist", "DeletedBy"));
             e.HasIndex(p => p.DeletedAt, SetIndexName("ClientWhitelist", "DeletedAt")).IsDescending();
         });
