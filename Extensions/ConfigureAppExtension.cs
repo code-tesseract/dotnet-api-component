@@ -1,3 +1,4 @@
+using System.Globalization;
 using Component.Base;
 using Component.Helpers;
 using Component.Middlewares;
@@ -7,6 +8,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -20,6 +22,7 @@ public static class ConfigureAppExtension
         app.ApplicationServices.ConfigureDirectoryHelper();
         app.ApplicationServices.ConfigureUriHelper();
 
+        app.AddLocalization();
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseRouting();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
@@ -31,10 +34,21 @@ public static class ConfigureAppExtension
             .AllowAnyHeader()
             .AllowCredentials()
         );
-        
+
         ValidatorOptions.Global.LanguageManager = new BaseLanguageManager();
     }
-    
+
+    private static void AddLocalization(this IApplicationBuilder app)
+    {
+        var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("id-ID") };
+        app.UseRequestLocalization(new RequestLocalizationOptions
+        {
+            DefaultRequestCulture = new RequestCulture(supportedCultures[0]),
+            SupportedCultures = supportedCultures,
+            SupportedUICultures = supportedCultures
+        });
+    }
+
     public static void UseDefaultEndpoint(this WebApplication app)
     {
         var appSetting = app.Services.GetRequiredService<IOptions<AppSetting>>().Value;
