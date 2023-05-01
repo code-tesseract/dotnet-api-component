@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Component.Base;
 
-[Index(nameof(CreatedBy), nameof(UpdatedBy), nameof(DeletedBy))]
-[Index(nameof(CreatedAt), nameof(UpdatedAt), nameof(DeletedAt), IsDescending = new[] { true, true, true })]
+[Index(nameof(CreatedBy))]
+[Index(nameof(UpdatedBy))]
+[Index(nameof(DeletedBy))]
+[Index(nameof(CreatedAt), IsDescending = new[] { true })]
+[Index(nameof(UpdatedAt), IsDescending = new[] { true })]
+[Index(nameof(DeletedAt), IsDescending = new[] { true })]
 public class BaseEntity
 {
 	protected BaseEntity()
