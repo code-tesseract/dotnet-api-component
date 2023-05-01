@@ -9,14 +9,14 @@ namespace Component.Externals.MediaService.Commands;
 
 public class UploadsCommand : IRequest<Response>
 {
-    public IEnumerable<IFormFile>? Files { get; set; }
-    
-    public class UploadsHandler : IRequestHandler<UploadsCommand, Response>
-    {
-        private readonly IMediaServiceModules _ms;
-        public UploadsHandler(IMediaServiceModules ms) => _ms = ms;
+	public IEnumerable<IFormFile>? Files { get; set; }
 
-        public async Task<Response> Handle(UploadsCommand request, CancellationToken ct)
-            => await _ms.UploadsAsync(request.Files, ct);
-    }
+	public class UploadsHandler : IRequestHandler<UploadsCommand, Response>
+	{
+		private readonly IMediaServiceModules _ms;
+		public UploadsHandler(IMediaServiceModules ms) => _ms = ms;
+
+		public async Task<Response> Handle(UploadsCommand request, CancellationToken ct)
+			=> await _ms.UploadsAsync(request.Files, ct);
+	}
 }

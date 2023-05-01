@@ -17,49 +17,51 @@ namespace Component.Extensions;
 
 public static class ConfigureAppExtension
 {
-    public static void AddGeneralPipelines(this IApplicationBuilder app)
-    {
-        app.ApplicationServices.ConfigureDirectoryHelper();
-        app.ApplicationServices.ConfigureUriHelper();
+	public static void AddGeneralPipelines(this IApplicationBuilder app)
+	{
+		app.ApplicationServices.ConfigureDirectoryHelper();
+		app.ApplicationServices.ConfigureUriHelper();
 
-        app.AddLocalization();
-        app.UseMiddleware<ExceptionMiddleware>();
-        app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-            { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
-        app.UseCors(builder => builder
-            .SetIsOriginAllowed(_ => true)
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials()
-        );
+		app.AddLocalization();
+		app.UseMiddleware<ExceptionMiddleware>();
+		app.UseRouting();
+		app.UseEndpoints(endpoints => endpoints.MapControllers());
+		app.UseForwardedHeaders(new ForwardedHeadersOptions
+		{
+			ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+		});
+		app.UseCors(builder => builder
+							   .SetIsOriginAllowed(_ => true)
+							   .AllowAnyMethod()
+							   .AllowAnyHeader()
+							   .AllowCredentials()
+		);
 
-        ValidatorOptions.Global.LanguageManager = new BaseLanguageManager();
-    }
+		ValidatorOptions.Global.LanguageManager = new BaseLanguageManager();
+	}
 
-    private static void AddLocalization(this IApplicationBuilder app)
-    {
-        var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("id-ID") };
-        app.UseRequestLocalization(new RequestLocalizationOptions
-        {
-            DefaultRequestCulture = new RequestCulture(supportedCultures[0]),
-            SupportedCultures = supportedCultures,
-            SupportedUICultures = supportedCultures
-        });
-    }
+	private static void AddLocalization(this IApplicationBuilder app)
+	{
+		var supportedCultures = new[] { new CultureInfo("en-US"), new CultureInfo("id-ID") };
+		app.UseRequestLocalization(new RequestLocalizationOptions
+		{
+			DefaultRequestCulture = new RequestCulture(supportedCultures[0]),
+			SupportedCultures     = supportedCultures,
+			SupportedUICultures   = supportedCultures
+		});
+	}
 
-    public static void UseDefaultEndpoint(this WebApplication app)
-    {
-        var appSetting = app.Services.GetRequiredService<IOptions<AppSetting>>().Value;
-        app.MapGet("~/", (HttpContext context)
-            => JsonConvert.SerializeObject(
-                new Response(
-                    name: appSetting.AppName,
-                    message: $"{appSetting.AppName} is running",
-                    data: $"You are accessing this endpoint from {IdentityHelper.GetClientIp(context)}"
-                )
-            )
-        );
-    }
+	public static void UseDefaultEndpoint(this WebApplication app)
+	{
+		var appSetting = app.Services.GetRequiredService<IOptions<AppSetting>>().Value;
+		app.MapGet("~/", (HttpContext context)
+					   => JsonConvert.SerializeObject(
+						   new Response(
+							   name: appSetting.AppName,
+							   message: $"{appSetting.AppName} is running",
+							   data: $"You are accessing this endpoint from {IdentityHelper.GetClientIp(context)}"
+						   )
+					   )
+		);
+	}
 }

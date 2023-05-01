@@ -9,9 +9,9 @@ namespace Component.Exceptions;
 
 public sealed class ValidationException : Exception
 {
-    public ValidationException(IReadOnlyDictionary<string, string[]> errorsDictionary)
-        : base(ResponseMessageEnum.ValidationError.GetDescription())
-        => ErrorsDictionary = errorsDictionary;
+	public ValidationException(IReadOnlyDictionary<string, string[]> errorsDictionary)
+		: base(ResponseMessageEnum.ValidationError.GetDescription())
+		=> ErrorsDictionary = errorsDictionary;
 
-    public IReadOnlyDictionary<string, string[]> ErrorsDictionary { get; }
+	public IReadOnlyDictionary<string, string[]> ErrorsDictionary { get; }
 }

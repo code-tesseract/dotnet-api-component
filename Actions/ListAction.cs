@@ -15,208 +15,208 @@ namespace Component.Actions;
 
 public class ListAction<TEntity>
 {
-    public IQueryable<TEntity> Query { get; set; }
-    public object QueryParams { get; set; }
+	public IQueryable<TEntity> Query       { get; set; }
+	public object              QueryParams { get; set; }
 
-    public ListAction(IQueryable<TEntity> query, object queryParams)
-    {
-        Query = query;
-        QueryParams = queryParams;
-    }
+	public ListAction(IQueryable<TEntity> query, object queryParams)
+	{
+		Query       = query;
+		QueryParams = queryParams;
+	}
 
-    public async Task<(int totalRecord, List<TEntity> data)> ToPagedAsync(CancellationToken ct = default)
-    {
-        var paginationFilter = new DefaultPaginationFilter();
-        var qpType = QueryParams.GetType();
+	public async Task<(int totalRecord, List<TEntity> data)> ToPagedAsync(CancellationToken ct = default)
+	{
+		var paginationFilter = new DefaultPaginationFilter();
+		var qpType           = QueryParams.GetType();
 
-        var page = qpType.GetProperty("Page")?.GetValue(QueryParams, null);
-        var perPage = qpType.GetProperty("PerPage")?.GetValue(QueryParams, null);
-        var filters = qpType.GetProperty("Filters")?.GetValue(QueryParams, null);
-        var firstRequestTime = qpType.GetProperty("FirstRequestTime")?.GetValue(QueryParams, null);
-        var sort = qpType.GetProperty("Sort")?.GetValue(QueryParams, null);
+		var page             = qpType.GetProperty("Page")?.GetValue(QueryParams, null);
+		var perPage          = qpType.GetProperty("PerPage")?.GetValue(QueryParams, null);
+		var filters          = qpType.GetProperty("Filters")?.GetValue(QueryParams, null);
+		var firstRequestTime = qpType.GetProperty("FirstRequestTime")?.GetValue(QueryParams, null);
+		var sort             = qpType.GetProperty("Sort")?.GetValue(QueryParams, null);
 
-        if (page != null) paginationFilter.Page = Convert.ToInt32(page);
-        if (perPage != null) paginationFilter.PerPage = Convert.ToInt32(perPage);
+		if (page != null) paginationFilter.Page       = Convert.ToInt32(page);
+		if (perPage != null) paginationFilter.PerPage = Convert.ToInt32(perPage);
 
-        /* filters logic */
-        if (filters != null)
-        {
-            paginationFilter.Filters = Convert.ToString(filters);
+		/* filters logic */
+		if (filters != null)
+		{
+			paginationFilter.Filters = Convert.ToString(filters);
 
-            var filtersString = Encoding.UTF8.GetString(Convert.FromBase64String(Convert.ToString(filters)!));
-            var filtersObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(filtersString);
+			var filtersString = Encoding.UTF8.GetString(Convert.FromBase64String(Convert.ToString(filters)!));
+			var filtersObj    = JsonConvert.DeserializeObject<Dictionary<string, object>>(filtersString);
 
-            var filterList = (from filter in filtersObj!
-                let values = ((JArray)filter.Value).ToObject<List<object>>()
-                select new FilterProperties
-                {
-                    Field = filter.Key,
-                    Operator = values![0].ToString()!,
-                    Value = values[1]
-                }).ToList();
+			var filterList = (from filter in filtersObj!
+							  let values = ((JArray)filter.Value).ToObject<List<object>>()
+							  select new FilterProperties
+							  {
+								  Field    = filter.Key,
+								  Operator = values![0].ToString()!,
+								  Value    = values[1]
+							  }).ToList();
 
-            if (filterList.Count > 0) Query = ApplyFilters(Query, filterList);
-        }
+			if (filterList.Count > 0) Query = ApplyFilters(Query, filterList);
+		}
 
-        /* first request time logic */
-        if (firstRequestTime != null) paginationFilter.FirstRequestTime = Convert.ToInt32(firstRequestTime);
-        var createdAtProperty = typeof(TEntity).GetProperty("CreatedAt");
-        if (createdAtProperty != null && createdAtProperty.PropertyType == typeof(DateTime))
-        {
-            var firstRequestTimeDatetime = DatetimeHelper.ToDatetimeFromUnixTimeSeconds(firstRequestTime != null
-                ? Convert.ToInt32(firstRequestTime)
-                : paginationFilter.FirstRequestTime);
+		/* first request time logic */
+		if (firstRequestTime != null) paginationFilter.FirstRequestTime = Convert.ToInt32(firstRequestTime);
+		var createdAtProperty                                           = typeof(TEntity).GetProperty("CreatedAt");
+		if (createdAtProperty != null && createdAtProperty.PropertyType == typeof(DateTime))
+		{
+			var firstRequestTimeDatetime = DatetimeHelper.ToDatetimeFromUnixTimeSeconds(firstRequestTime != null
+				? Convert.ToInt32(firstRequestTime)
+				: paginationFilter.FirstRequestTime);
 
-            Query = Query.Where("CreatedAt <= @0", firstRequestTimeDatetime);
-        }
+			Query = Query.Where("CreatedAt <= @0", firstRequestTimeDatetime);
+		}
 
-        /* sort logic */
-        if (sort != null)
-        {
-            var sorts = sort.ToString()?.Split(';');
-            if (sorts?.Length > 0) Query = ApplyOrderBy(Query, sorts) ?? Query;
-            paginationFilter.Sort = sort.ToString();
-        }
+		/* sort logic */
+		if (sort != null)
+		{
+			var sorts                    = sort.ToString()?.Split(';');
+			if (sorts?.Length > 0) Query = ApplyOrderBy(Query, sorts) ?? Query;
+			paginationFilter.Sort = sort.ToString();
+		}
 
-        /* get the total record and return to list */
-        var totalRecord = await Query.CountAsync(ct);
-        var data = await Query
-            .Skip((paginationFilter.Page - 1) * paginationFilter.PerPage)
-            .Take(paginationFilter.PerPage)
-            .ToListAsync(ct);
+		/* get the total record and return to list */
+		var totalRecord = await Query.CountAsync(ct);
+		var data = await Query
+						 .Skip((paginationFilter.Page - 1) * paginationFilter.PerPage)
+						 .Take(paginationFilter.PerPage)
+						 .ToListAsync(ct);
 
-        return (totalRecord, data);
-    }
+		return (totalRecord, data);
+	}
 
-    private static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, List<FilterProperties> filterList)
-    {
-        var filteredQuery = query;
-        var entityProperties = typeof(TEntity).GetProperties();
-        foreach (var filter in filterList)
-        {
-            var prop = entityProperties.FirstOrDefault(e => e.Name.Equals(filter.Field));
-            if (prop != null)
-            {
-                switch (filter.Operator)
-                {
-                    case OperatorsFilter.EqualOperator:
-                        filteredQuery = filteredQuery.Where($"{filter.Field} == @0", filter.Value);
-                        break;
-                    case OperatorsFilter.NotEqualOperator:
-                        filteredQuery = filteredQuery.Where($"{filter.Field} != @0", filter.Value);
-                        break;
-                    case OperatorsFilter.LikeOperator:
-                        filteredQuery = filteredQuery.Where($"{filter.Field}.Contains(@0)", filter.Value);
-                        break;
-                    case OperatorsFilter.NotLikeOperator:
-                        filteredQuery = filteredQuery.Where($"!{filter.Field}.Contains(@0)", filter.Value);
-                        break;
-                    case OperatorsFilter.BetweenOperator:
-                    {
-                        object from = null!;
-                        object until = null!;
-                        var allowBetween = new[]
-                            {
-                                typeof(DateTime),
-                                typeof(double),
-                                typeof(int),
-                                typeof(long),
-                                typeof(float),
-                                typeof(decimal)
-                            }
-                            .Contains(prop.PropertyType);
+	private static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, List<FilterProperties> filterList)
+	{
+		var filteredQuery    = query;
+		var entityProperties = typeof(TEntity).GetProperties();
+		foreach (var filter in filterList)
+		{
+			var prop = entityProperties.FirstOrDefault(e => e.Name.Equals(filter.Field));
+			if (prop != null)
+			{
+				switch (filter.Operator)
+				{
+					case OperatorsFilter.EqualOperator:
+						filteredQuery = filteredQuery.Where($"{filter.Field} == @0", filter.Value);
+						break;
+					case OperatorsFilter.NotEqualOperator:
+						filteredQuery = filteredQuery.Where($"{filter.Field} != @0", filter.Value);
+						break;
+					case OperatorsFilter.LikeOperator:
+						filteredQuery = filteredQuery.Where($"{filter.Field}.Contains(@0)", filter.Value);
+						break;
+					case OperatorsFilter.NotLikeOperator:
+						filteredQuery = filteredQuery.Where($"!{filter.Field}.Contains(@0)", filter.Value);
+						break;
+					case OperatorsFilter.BetweenOperator:
+					{
+						object from  = null!;
+						object until = null!;
+						var allowBetween = new[]
+							{
+								typeof(DateTime),
+								typeof(double),
+								typeof(int),
+								typeof(long),
+								typeof(float),
+								typeof(decimal)
+							}
+							.Contains(prop.PropertyType);
 
-                        if (allowBetween)
-                        {
-                            if (prop.PropertyType == typeof(DateTime))
-                            {
-                                from = DateTime.Parse(((JArray)filter.Value)[0].ToString());
-                                until = DateTime.Parse(((JArray)filter.Value)[1].ToString());
-                            }
-                            else
-                            {
-                                from = Convert.ToDouble(((JArray)filter.Value)[0]);
-                                until = Convert.ToDouble(((JArray)filter.Value)[1]);
-                            }
-                        }
+						if (allowBetween)
+						{
+							if (prop.PropertyType == typeof(DateTime))
+							{
+								from  = DateTime.Parse(((JArray)filter.Value)[0].ToString());
+								until = DateTime.Parse(((JArray)filter.Value)[1].ToString());
+							}
+							else
+							{
+								from  = Convert.ToDouble(((JArray)filter.Value)[0]);
+								until = Convert.ToDouble(((JArray)filter.Value)[1]);
+							}
+						}
 
-                        filteredQuery = filteredQuery.Where($"{filter.Field} >= @0 AND {filter.Field} <= @1", from,
-                            until);
-                        break;
-                    }
-                    case OperatorsFilter.LessThanOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"{filter.Field} < @0", filter.Value);
-                        break;
-                    }
-                    case OperatorsFilter.LessThanEqualOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"{filter.Field} <= @0", filter.Value);
-                        break;
-                    }
-                    case OperatorsFilter.GreaterThanOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"{filter.Field} > @0", filter.Value);
-                        break;
-                    }
-                    case OperatorsFilter.GreaterThanEqualOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"{filter.Field} >= @0", filter.Value);
-                        break;
-                    }
-                    case OperatorsFilter.InOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"{(JArray)filter.Value}.Contains(@0)", filter.Field);
-                        break;
-                    }
-                    case OperatorsFilter.NotInOperator:
-                    {
-                        filteredQuery = filteredQuery.Where($"!{(JArray)filter.Value}.Contains(@0)", filter.Field);
-                        break;
-                    }
-                    default: continue;
-                }
-            }
-        }
+						filteredQuery = filteredQuery.Where($"{filter.Field} >= @0 AND {filter.Field} <= @1", from,
+															until);
+						break;
+					}
+					case OperatorsFilter.LessThanOperator:
+					{
+						filteredQuery = filteredQuery.Where($"{filter.Field} < @0", filter.Value);
+						break;
+					}
+					case OperatorsFilter.LessThanEqualOperator:
+					{
+						filteredQuery = filteredQuery.Where($"{filter.Field} <= @0", filter.Value);
+						break;
+					}
+					case OperatorsFilter.GreaterThanOperator:
+					{
+						filteredQuery = filteredQuery.Where($"{filter.Field} > @0", filter.Value);
+						break;
+					}
+					case OperatorsFilter.GreaterThanEqualOperator:
+					{
+						filteredQuery = filteredQuery.Where($"{filter.Field} >= @0", filter.Value);
+						break;
+					}
+					case OperatorsFilter.InOperator:
+					{
+						filteredQuery = filteredQuery.Where($"{(JArray)filter.Value}.Contains(@0)", filter.Field);
+						break;
+					}
+					case OperatorsFilter.NotInOperator:
+					{
+						filteredQuery = filteredQuery.Where($"!{(JArray)filter.Value}.Contains(@0)", filter.Field);
+						break;
+					}
+					default: continue;
+				}
+			}
+		}
 
-        return filteredQuery;
-    }
+		return filteredQuery;
+	}
 
-    private static IQueryable<T>? ApplyOrderBy<T>(IQueryable<T> query, IEnumerable<string> propertyNames)
-    {
-        var entityType = typeof(T);
-        var parameter = Expression.Parameter(entityType, "x");
-        var orderedQuery = query.OrderBy(x => 0);
+	private static IQueryable<T>? ApplyOrderBy<T>(IQueryable<T> query, IEnumerable<string> propertyNames)
+	{
+		var entityType   = typeof(T);
+		var parameter    = Expression.Parameter(entityType, "x");
+		var orderedQuery = query.OrderBy(x => 0);
 
-        foreach (var originalPropertyName in propertyNames)
-        {
-            var propertyName = Regex.Replace(originalPropertyName, @"[^0-9a-zA-Z]+", "");
-            var property = entityType.GetProperty(propertyName);
+		foreach (var originalPropertyName in propertyNames)
+		{
+			var propertyName = Regex.Replace(originalPropertyName, @"[^0-9a-zA-Z]+", "");
+			var property     = entityType.GetProperty(propertyName);
 
-            if (property == null) continue;
+			if (property == null) continue;
 
-            var isAsc = originalPropertyName[0] != '-';
+			var isAsc = originalPropertyName[0] != '-';
 
-            var propertyType = property.PropertyType;
-            var propertyAccess = Expression.MakeMemberAccess(parameter, property);
-            var orderByLambda = Expression.Lambda(propertyAccess, parameter);
+			var propertyType   = property.PropertyType;
+			var propertyAccess = Expression.MakeMemberAccess(parameter, property);
+			var orderByLambda  = Expression.Lambda(propertyAccess, parameter);
 
-            var methodName = isAsc ? "ThenBy" : "ThenByDescending";
-            var orderByMethod = typeof(Queryable).GetMethods().Single(
-                    method => method.Name == methodName &&
-                              method.IsGenericMethodDefinition &&
-                              method.GetGenericArguments().Length == 2 &&
-                              method.GetParameters().Length == 2)
-                .MakeGenericMethod(entityType, propertyType);
+			var methodName = isAsc ? "ThenBy" : "ThenByDescending";
+			var orderByMethod = typeof(Queryable).GetMethods().Single(
+													 method => method.Name == methodName &&
+															   method.IsGenericMethodDefinition &&
+															   method.GetGenericArguments().Length == 2 &&
+															   method.GetParameters().Length == 2)
+												 .MakeGenericMethod(entityType, propertyType);
 
-            if (orderedQuery != null)
-            {
-                orderedQuery = (IOrderedQueryable<T>)orderByMethod.Invoke(null, new object[]
-                    { orderedQuery, orderByLambda }
-                )!;
-            }
-        }
+			if (orderedQuery != null)
+			{
+				orderedQuery = (IOrderedQueryable<T>)orderByMethod.Invoke(null, new object[]
+																			  { orderedQuery, orderByLambda }
+				)!;
+			}
+		}
 
-        return orderedQuery;
-    }
+		return orderedQuery;
+	}
 }

@@ -30,39 +30,39 @@ namespace Component.Base;
 
 public class BaseLanguageManager : LanguageManager
 {
-    private const string DefaultLanguage = "en-US";
+	private const string DefaultLanguage = "en-US";
 
-    private class TranslationModel
-    {
-        public TranslationModel(string key, string value, string language = DefaultLanguage)
-        {
-            Key = key;
-            Value = value;
-            Language = language;
-        }
+	private class TranslationModel
+	{
+		public TranslationModel(string key, string value, string language = DefaultLanguage)
+		{
+			Key      = key;
+			Value    = value;
+			Language = language;
+		}
 
-        public string Language { get; set; }
-        public string Key { get; set; }
-        public string Value { get; set; }
-    }
+		public string Language { get; set; }
+		public string Key      { get; set; }
+		public string Value    { get; set; }
+	}
 
-    private static readonly List<TranslationModel> ValidationMessages = new()
-    {
-        new("NotEmptyValidator", "{PropertyName} is required. Please provide a valid input."),
-        new("NotNullValidator", "{PropertyName} cannot be null. Please provide a valid value."),
-        new("LengthValidator", "{PropertyName} must be between {MinLength} and {MaxLength} characters/numbers long."),
-        new("MinimumLengthValidator", "{PropertyName} must be at least {MinLength} characters/numbers long."),
-        new("MaximumLengthValidator", "{PropertyName} must not exceed {MaxLength} characters/numbers long."),
-        new("GreaterThanValidator", "{PropertyName} must be greater than {ComparisonValue}."),
-        new("GreaterThanOrEqualValidator", "{PropertyName} must be greater than or equal to {ComparisonValue}."),
-        new("LessThanValidator", "{PropertyName} must be less than {ComparisonValue}."),
-        new("LessThanOrEqualValidator", "{PropertyName} must be less than or equal to {ComparisonValue}."),
-        new("EqualValidator", "{PropertyName} must be equal to {ComparisonProperty}."),
-        new("NotEqualValidator", "{PropertyName} must not be equal to {ComparisonProperty}."),
-        new("ExclusiveBetweenValidator", "{PropertyName} must be between {ComparisonValue}, exclusive."),
-        new("InclusiveBetweenValidator", "{PropertyName} must be between {ComparisonValue}, inclusive."),
-        new("EmailValidator", "Please provide a valid email address.")
-    };
+	private static readonly List<TranslationModel> ValidationMessages = new()
+	{
+		new("NotEmptyValidator", "{PropertyName} is required. Please provide a valid input."),
+		new("NotNullValidator", "{PropertyName} cannot be null. Please provide a valid value."),
+		new("LengthValidator", "{PropertyName} must be between {MinLength} and {MaxLength} characters/numbers long."),
+		new("MinimumLengthValidator", "{PropertyName} must be at least {MinLength} characters/numbers long."),
+		new("MaximumLengthValidator", "{PropertyName} must not exceed {MaxLength} characters/numbers long."),
+		new("GreaterThanValidator", "{PropertyName} must be greater than {ComparisonValue}."),
+		new("GreaterThanOrEqualValidator", "{PropertyName} must be greater than or equal to {ComparisonValue}."),
+		new("LessThanValidator", "{PropertyName} must be less than {ComparisonValue}."),
+		new("LessThanOrEqualValidator", "{PropertyName} must be less than or equal to {ComparisonValue}."),
+		new("EqualValidator", "{PropertyName} must be equal to {ComparisonProperty}."),
+		new("NotEqualValidator", "{PropertyName} must not be equal to {ComparisonProperty}."),
+		new("ExclusiveBetweenValidator", "{PropertyName} must be between {ComparisonValue}, exclusive."),
+		new("InclusiveBetweenValidator", "{PropertyName} must be between {ComparisonValue}, inclusive."),
+		new("EmailValidator", "Please provide a valid email address.")
+	};
 
-    public BaseLanguageManager() => ValidationMessages.ForEach(fv => AddTranslation(fv.Language, fv.Key, fv.Value));
+	public BaseLanguageManager() => ValidationMessages.ForEach(fv => AddTranslation(fv.Language, fv.Key, fv.Value));
 }
