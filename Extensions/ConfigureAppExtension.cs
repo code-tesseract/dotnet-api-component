@@ -19,6 +19,13 @@ public static class ConfigureAppExtension
 {
 	public static void AddGeneralPipelines(this IApplicationBuilder app)
 	{
+		app.UseCors(builder => builder
+			.SetIsOriginAllowed(_ => true)
+			.AllowAnyMethod()
+			.AllowAnyHeader()
+			.AllowCredentials()
+		);
+		
 		app.ApplicationServices.ConfigureDirectoryHelper();
 		app.ApplicationServices.ConfigureUriHelper();
 
@@ -30,12 +37,6 @@ public static class ConfigureAppExtension
 		{
 			ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 		});
-		app.UseCors(builder => builder
-							   .SetIsOriginAllowed(_ => true)
-							   .AllowAnyMethod()
-							   .AllowAnyHeader()
-							   .AllowCredentials()
-		);
 
 		ValidatorOptions.Global.LanguageManager = new BaseLanguageManager();
 	}
